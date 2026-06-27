@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getCurrentFilePath: () => ipcRenderer.invoke('get-current-file-path'),
   setUnsavedChanges: (hasChanges: boolean) => ipcRenderer.send('set-unsaved-changes', hasChanges),
   setTitleBarTheme: (theme: string) => ipcRenderer.send('window:set-theme-overlay', theme),
+  onOpenFile: (callback: (filePath: string) => void) => {
+    ipcRenderer.on('open-file', (_event, filePath: string) => callback(filePath));
+  },
   onBeforeClose: (callback: () => Promise<any>) => {
     ipcRenderer.on('before-close', async () => {
       const result = await callback();
@@ -57,14 +60,4 @@ ipcRenderer.on('reports:data', (_e, payload) => {
 contextBridge.exposeInMainWorld('reportSignal', {
   mounted: () => ipcRenderer.send('reports:mounted'),
   ready: () => ipcRenderer.send('reports:ready', 'report:ready')
-});
-
-// License Management API
-contextBridge.exposeInMainWorld('licenseAPI', {
-  checkStatus: () => ipcRenderer.invoke('license:check-status'),
-  activate: (key: string) => ipcRenderer.invoke('license:activate', key),
-  getInfo: () => ipcRenderer.invoke('license:get-info'),
-  deactivate: () => ipcRenderer.invoke('license:deactivate'),
-  getMachineId: () => ipcRenderer.invoke('license:get-machine-id'),
-  validateFormat: (key: string) => ipcRenderer.invoke('license:validate-format', key)
 });

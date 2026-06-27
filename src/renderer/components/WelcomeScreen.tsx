@@ -1,4 +1,5 @@
 import React from 'react';
+import appIcon from '../../../assets/icons/png/64x64.png';
 
 interface RecentProject {
   name: string;
@@ -45,7 +46,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             letterSpacing: '2px',
             textShadow: 'var(--glow-strong)'
           }}>
-            <i className="bi bi-currency-dollar"></i> NettUp
+            <img src={appIcon} alt="" style={{ height: '1.1em', width: 'auto', verticalAlign: '-0.2em', marginRight: '0.5rem', borderRadius: '7px' }} /> NettUp
           </h1>
           <div style={{
             marginTop: '0.5rem',

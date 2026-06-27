@@ -1,63 +1,21 @@
-FINANCIAL TRACKER - SOFTWARE LICENSE AGREEMENT
+MIT License
 
-Version 1.0.0
-Copyright (c) 2025 LogiKore
+Copyright (c) 2026 Martin J. Carbonell Colon (LogiKore)
 
-This software is licensed, not sold. By installing and using Financial Tracker,
-you agree to the following terms:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-GRANT OF LICENSE
-LogiKore grants you a non-exclusive, non-transferable license to use Financial
-Tracker on a single machine per license key.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-RESTRICTIONS
-You may not:
-- Share or distribute your license key
-- Use one license key on multiple machines
-- Reverse engineer, decompile, or disassemble the software
-- Modify, adapt, or create derivative works
-- Rent, lease, or lend the software
-- Use the software for any illegal purpose
-
-LICENSE ACTIVATION
-- Each license key activates one installation on one machine
-- Your machine ID will be registered upon activation
-- Contact support for license transfers or assistance
-
-DATA AND PRIVACY
-- All financial data is stored locally on your machine
-- No data is transmitted to external servers
-- No telemetry or usage data is collected
-
-WARRANTY DISCLAIMER
-This software is provided "as is" without warranty of any kind, either expressed
-or implied, including but not limited to the implied warranties of merchantability
-and fitness for a particular purpose. The entire risk as to the quality and
-performance of the software is with you.
-
-LIMITATION OF LIABILITY
-In no event shall LogiKore be liable for any damages whatsoever (including,
-without limitation, damages for loss of business profits, business interruption,
-loss of business information, or any other pecuniary loss) arising out of the
-use of or inability to use this software.
-
-SUPPORT
-For support, contact:
-- Email: info@logikore.com
-- Email: m.colon16@live.com
-
-TERMINATION
-This license is effective until terminated. Your rights under this license will
-terminate automatically without notice if you fail to comply with any term of
-this agreement.
-
-COMMERCIAL LICENSING
-For commercial licensing, volume licenses, or custom agreements, please contact
-LogiKore at info@logikore.com.
-
-By installing this software, you acknowledge that you have read this agreement,
-understand it, and agree to be bound by its terms and conditions.
-
----
-LogiKore
-https://logikore.com
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

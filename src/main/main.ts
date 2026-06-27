@@ -3,13 +3,29 @@ import { autoUpdater } from 'electron-updater';
 import Store from 'electron-store';
 import * as path from 'path';
 import * as fs from 'fs';
-import { LicenseManager } from './licenseManager';
 
 let currentFilePath: string | null = null;
 let mainWindow: BrowserWindow | null = null;
 let hasUnsavedChanges: boolean = false;
 // When true, the window is waiting on an in-flight save before it closes.
 let pendingClose: boolean = false;
+// A project file passed on the command line (double-click) awaiting the renderer.
+let pendingOpenFile: string | null = null;
+
+// Finds a project file path among CLI args (e.g. from double-clicking a .nettup).
+function fileFromArgv(argv: string[]): string | null {
+  const arg = argv.find(a => /\.(nettup|json)$/i.test(a) && fs.existsSync(a));
+  return arg || null;
+}
+
+// Hands an externally-opened file to the renderer (or queues it until ready).
+function openExternalFile(filePath: string) {
+  if (mainWindow && !mainWindow.webContents.isLoading()) {
+    mainWindow.webContents.send('open-file', filePath);
+  } else {
+    pendingOpenFile = filePath;
+  }
+}
 
 const MAX_BACKUPS_PER_FILE = 10;
 
@@ -39,6 +55,18 @@ const settingsStore = new Store<{ theme?: string }>({ name: 'settings' }) as Sto
 
 function storedTheme(): string {
   return settingsStore.get('theme') || DEFAULT_THEME;
+}
+
+// Default location for user project files: Documents\NettUp (created on demand).
+// Never the install directory — that's read-only under UAC and wiped on update.
+function defaultProjectsDir(): string {
+  const dir = path.join(app.getPath('documents'), 'NettUp');
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+  } catch {
+    return app.getPath('documents');
+  }
+  return dir;
 }
 
 function overlayForTheme(theme?: string) {
@@ -161,6 +189,14 @@ function createWindow() {
   mainWindow.webContents.on('console-message', (_event, level, message, line, sourceId) => {
     const levelMap = ['[VERBOSE]', '[INFO]', '[WARNING]', '[ERROR]'];
     console.log(`[RENDERER] ${levelMap[level] || '[LOG]'} ${message}`);
+  });
+
+  // Once the renderer is ready, hand it any file opened via double-click.
+  mainWindow.webContents.on('did-finish-load', () => {
+    if (pendingOpenFile) {
+      mainWindow?.webContents.send('open-file', pendingOpenFile);
+      pendingOpenFile = null;
+    }
   });
 
   const menu = Menu.buildFromTemplate([
@@ -318,10 +354,26 @@ function setupAutoUpdater() {
   });
 }
 
-app.whenReady().then(() => {
-  createWindow();
-  setupAutoUpdater();
-});
+// Single-instance: if a second copy is launched (e.g. double-clicking a file
+// while the app is open), forward the file to the existing window instead.
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on('second-instance', (_event, argv) => {
+    const file = fileFromArgv(argv);
+    if (file) openExternalFile(file);
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+
+  app.whenReady().then(() => {
+    pendingOpenFile = fileFromArgv(process.argv);
+    createWindow();
+    setupAutoUpdater();
+  });
+}
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -378,9 +430,10 @@ ipcMain.handle('save-project-as', async (_event, data: any) => {
 ipcMain.handle('open-project', async () => {
   console.log('[MAIN] Open project requested');
   const result = await dialog.showOpenDialog(mainWindow!, {
-    title: 'Open Financial Project',
+    title: 'Open NettUp Project',
+    defaultPath: defaultProjectsDir(),
     filters: [
-      { name: 'Financial Project', extensions: ['json'] },
+      { name: 'NettUp Project', extensions: ['nettup', 'json'] },
       { name: 'All Files', extensions: ['*'] }
     ],
     properties: ['openFile']
@@ -426,53 +479,6 @@ ipcMain.on('window:set-theme-overlay', (_event, theme: string) => {
     console.error('[MAIN] setTitleBarOverlay failed:', err);
   }
 });
-
-// ============= LICENSE MANAGEMENT =============
-
-// Check if application is licensed
-ipcMain.handle('license:check-status', async () => {
-  console.log('[MAIN] License status check requested');
-  const isLicensed = LicenseManager.isLicensed();
-  console.log('[MAIN] License status:', isLicensed);
-  return { isLicensed };
-});
-
-// Activate a license key
-ipcMain.handle('license:activate', async (_event, key: string) => {
-  console.log('[MAIN] License activation requested');
-  const result = await LicenseManager.activateLicense(key, false); // Set to true for machine binding
-  console.log('[MAIN] Activation result:', result);
-  return result;
-});
-
-// Get license information
-ipcMain.handle('license:get-info', async () => {
-  console.log('[MAIN] License info requested');
-  const info = LicenseManager.getLicenseInfo();
-  return info;
-});
-
-// Deactivate license (for testing/support purposes)
-ipcMain.handle('license:deactivate', async () => {
-  console.log('[MAIN] License deactivation requested');
-  LicenseManager.deactivateLicense();
-  return { success: true };
-});
-
-// Get machine ID (for debugging/support)
-ipcMain.handle('license:get-machine-id', async () => {
-  const machineId = LicenseManager.getMachineId();
-  console.log('[MAIN] Machine ID requested:', machineId);
-  return { machineId };
-});
-
-// Validate key format without activating
-ipcMain.handle('license:validate-format', async (_event, key: string) => {
-  const isValid = LicenseManager.validateKeyFormat(key);
-  return { isValid };
-});
-
-// ============= END LICENSE MANAGEMENT =============
 
 // PDF Report Export
 ipcMain.handle('reports:export', async (_event, opts: {
@@ -694,11 +700,13 @@ function migrateProjectData(data: any) {
 
 // Helper function for Save As
 async function handleSaveAs(data: any) {
+  const suggestedName = `${String(data?.name || 'My Finances').replace(/[^\w.-]+/g, ' ').trim() || 'My Finances'}.nettup`;
   const result = await dialog.showSaveDialog(mainWindow!, {
-    title: 'Save Financial Project',
-    defaultPath: currentFilePath || 'financial-project.json',
+    title: 'Save NettUp Project',
+    defaultPath: currentFilePath || path.join(defaultProjectsDir(), suggestedName),
     filters: [
-      { name: 'Financial Project', extensions: ['json'] },
+      { name: 'NettUp Project', extensions: ['nettup'] },
+      { name: 'JSON', extensions: ['json'] },
       { name: 'All Files', extensions: ['*'] }
     ]
   });

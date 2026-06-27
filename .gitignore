@@ -9,10 +9,8 @@ release/
 *.log
 npm-debug.log*
 
-# Secrets & license artifacts (do NOT commit)
+# Local machine / license-activation artifacts
 production-keys.txt
-scripts/generateKeys.js
-LICENSE_SYSTEM_README.md
 _ul
 _ul-*
 

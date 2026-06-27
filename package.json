@@ -45,9 +45,16 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icons/win/icon.ico",
-      "signAndEditExecutable": false
+      "icon": "assets/icons/win/icon.ico"
     },
+    "fileAssociations": [
+      {
+        "ext": "nettup",
+        "name": "NettUp Project",
+        "description": "NettUp Project File",
+        "icon": "assets/icons/win/icon.ico"
+      }
+    ],
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,

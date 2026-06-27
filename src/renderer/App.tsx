@@ -17,10 +17,10 @@ import ReportGenerator from './components/ReportGenerator';
 import ReportPage from './components/ReportPage';
 import LoadingScreen from './components/LoadingScreen';
 import WelcomeScreen from './components/WelcomeScreen';
-import LicenseActivation from './components/LicenseActivation';
 import Settings from './components/Settings';
 import Clock from './components/Clock';
 import FileMenu from './components/FileMenu';
+import appIcon from '../../assets/icons/png/64x64.png';
 import { initNumberInputSpinners } from './utils/numberInputSpinners';
 import { setCurrencyConfig } from './utils/formatters';
 
@@ -32,32 +32,12 @@ interface RecentProject {
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [isLicensed, setIsLicensed] = useState(false);
-  const [checkingLicense, setCheckingLicense] = useState(true);
   const [showWelcome, setShowWelcome] = useState(true);
   const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [project, setProject] = useState<FinancialProject | null>(null);
   const [currentFilePath, setCurrentFilePath] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
-  // Check license status on mount
-  useEffect(() => {
-    const checkLicense = async () => {
-      try {
-        const result = await window.licenseAPI.checkStatus();
-        setIsLicensed(result.isLicensed);
-        console.log('[LICENSE] License check result:', result.isLicensed);
-      } catch (error) {
-        console.error('[LICENSE] Failed to check license status:', error);
-        setIsLicensed(false);
-      } finally {
-        setCheckingLicense(false);
-      }
-    };
-
-    checkLicense();
-  }, []);
 
   // Initialize number input spinners
   useEffect(() => {
@@ -68,6 +48,13 @@ const App: React.FC = () => {
   // project is loaded (the loading and welcome screens already follow it).
   useEffect(() => {
     window.electronAPI.setTitleBarTheme(localStorage.getItem('theme') || 'light');
+  }, []);
+
+  // Open a project that was launched by double-clicking a .nettup file.
+  useEffect(() => {
+    window.electronAPI.onOpenFile?.((filePath) => {
+      handleOpenRecentProject(filePath);
+    });
   }, []);
 
   // Load recent projects from localStorage
@@ -639,11 +626,6 @@ const App: React.FC = () => {
     return 'Unsaved Project';
   };
 
-  const handleLicenseActivated = () => {
-    console.log('[LICENSE] License activated successfully');
-    setIsLicensed(true);
-  };
-
   // Show loading screen first
   if (isLoading) {
     return <LoadingScreen onComplete={() => setIsLoading(false)} />;
@@ -652,11 +634,6 @@ const App: React.FC = () => {
   // Check if we're on the report page (for PDF generation)
   if (window.location.hash === '#report') {
     return <ReportPage />;
-  }
-
-  // Show license activation screen if not licensed (after loading screen)
-  if (!checkingLicense && !isLicensed) {
-    return <LicenseActivation onActivated={handleLicenseActivated} />;
   }
 
   // Show welcome screen if no project is loaded
@@ -676,7 +653,9 @@ const App: React.FC = () => {
     <div className="app">
       <header className="header titlebar">
         <div className="titlebar-left">
-          <h1 style={{ margin: 0 }}><i className="bi bi-currency-dollar"></i> NettUp</h1>
+          <h1 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <img src={appIcon} alt="NettUp" style={{ height: '1.4em', width: 'auto', borderRadius: '5px' }} /> NettUp
+          </h1>
           <FileMenu
             onNew={handleNewProject}
             onOpen={handleOpenProject}

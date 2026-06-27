@@ -132,6 +132,7 @@ declare global {
       getCurrentFilePath: () => Promise<string | null>;
       setUnsavedChanges: (hasChanges: boolean) => void;
       setTitleBarTheme: (theme: string) => void;
+      onOpenFile: (callback: (filePath: string) => void) => void;
       onBeforeClose: (callback: () => Promise<any>) => void;
       onMenuAction: (callback: (action: string) => void) => () => void;
     };

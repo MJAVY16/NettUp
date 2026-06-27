@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import appIcon from '../../../assets/icons/png/64x64.png';
 
 const LoadingScreen: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   // The active theme is applied to <html> at startup (from localStorage), so we
@@ -97,7 +98,7 @@ const LoadingScreen: React.FC<{ onComplete: () => void }> = ({ onComplete }) => 
             color: 'var(--text-primary)',
             fontFamily: 'var(--font-family-modern)'
           }}>
-            <i className="bi bi-currency-dollar" style={{ color: 'var(--primary-color)' }}></i> NettUp
+            <img src={appIcon} alt="" style={{ height: '1.2em', width: 'auto', verticalAlign: '-0.2em', marginRight: '0.4rem', borderRadius: '6px' }} /> NettUp
           </h1>
           <div style={{
             marginTop: '0.4rem',

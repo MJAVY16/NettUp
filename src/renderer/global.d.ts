@@ -11,6 +11,7 @@ declare global {
       getCurrentFilePath: () => Promise<string | null>;
       setUnsavedChanges: (hasChanges: boolean) => void;
       setTitleBarTheme: (theme: string) => void;
+      onOpenFile: (callback: (filePath: string) => void) => void;
       onBeforeClose: (callback: () => Promise<any>) => void;
       onMenuAction: (callback: (action: string) => void) => () => void;
     };
@@ -21,14 +22,6 @@ declare global {
         printOptions?: Electron.PrintToPDFOptions;
         save?: boolean;
       }) => Promise<Uint8Array>;
-    };
-    licenseAPI: {
-      checkStatus: () => Promise<{ isLicensed: boolean }>;
-      activate: (key: string) => Promise<{ success: boolean; message: string }>;
-      getInfo: () => Promise<{ key: string; activatedAt: string; machineId?: string; isValid: boolean } | null>;
-      deactivate: () => Promise<{ success: boolean }>;
-      getMachineId: () => Promise<{ machineId: string }>;
-      validateFormat: (key: string) => Promise<{ isValid: boolean }>;
     };
     electronSend: (channel: string, payload: any) => void;
   }
