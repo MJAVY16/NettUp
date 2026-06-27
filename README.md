@@ -1,266 +1,93 @@
-# Financial Tracker
+# NettUp
 
-**Version 1.0.0**
+**A free, open-source desktop app for managing your personal finances** — income, debts, credit cards, installment plans, expenses, budgets, and savings goals. All data stays local on your machine.
 
-A powerful desktop application for managing your personal finances, tracking income, expenses, debts, and budgets.
+Built with Electron + React. Licensed under MIT.
 
 ---
 
 ## Features
 
-### 📊 **Dashboard Overview**
-- Real-time financial summary
-- Monthly income vs expenses
-- Net savings tracking
-- Debt-to-income ratio
-- Quick insights into your financial health
-
-### 💰 **Income Management**
-- Track multiple income sources
-- Support for various frequencies (monthly, bi-weekly, weekly, yearly, one-time)
-- Automatic monthly income calculations
-- Income categorization (Salary, Freelance, Business, Investment, etc.)
-
-### 💳 **Debt Tracking**
-- Manage credit cards, loans, mortgages, and payment plans
-- Track current balance, interest rates, and minimum payments
-- Visual progress bars for debt payoff
-- Payment plan tracking with smart calculators
-- Credit utilization monitoring
-
-### 🛒 **Expense Tracking**
-- Categorize expenses (Food, Housing, Transportation, Entertainment, etc.)
-- Essential vs non-essential classification
-- Frequency-based expense tracking
-- Duplicate expense entries for recurring items
-- Monthly expense calculations
-
-### 📈 **Budget Planning**
-- Set budgets by category
-- Real-time spending vs budget comparison
-- Visual progress indicators
-- Over-budget alerts
-- Automatic expense aggregation
-
-### 📉 **Analytics & Charts**
-- Income breakdown by source
-- Expense distribution by category
-- Debt composition visualization
-- Budget performance tracking
-- Historical trends and insights
-
-### 📄 **Reporting**
-- Generate comprehensive financial reports
-- Export to PDF
-- Professional formatting
-- Customizable date ranges
-
-### 🔐 **License System**
-- Secure activation with license keys
-- One-time activation per machine
-- Contact support for license assistance
+- **Dashboard** — monthly income vs. expenses, net savings, debt-to-income ratio, upcoming payments, and financial-health indicators.
+- **Income** — multiple sources with flexible frequencies (weekly, bi-weekly, semi-monthly, monthly, yearly, one-time), normalized to monthly automatically.
+- **Debts** — loans, mortgage, auto, student, and personal debts with payoff progress.
+- **Credit Cards** — utilization tracking (greener at low usage, redder as it climbs), available credit, and a "closed card" state.
+- **Installment Plans** — buy-now-pay-later tracking with real servicer logos (Affirm, Klarna, Afterpay, PayPal, Apple Pay, Zip) and payoff progress.
+- **Expenses** — categorized, essential vs. non-essential, recurring or one-time.
+- **Budgets** — per-category budgets vs. actual spending (derived from your expenses), with over-budget alerts.
+- **Goals** — savings goals with progress tracking.
+- **Analytics & Charts** — breakdowns by type/category and interactive visualizations.
+- **Reports** — generate and export financial reports to PDF.
+- **Themes** — Spy (terminal), Dark, and Light, with the window chrome matched to each.
 
 ---
 
-## System Requirements
+## Download & Install (Windows)
 
-- **Operating System**: Windows 10 or later
-- **RAM**: 4GB minimum (8GB recommended)
-- **Disk Space**: 200MB free space
-- **Display**: 1280x720 minimum resolution
+1. Grab the latest **`NettUp Setup x.y.z.exe`** from the [Releases page](https://github.com/MJAVY16/NettUp/releases).
+2. Run the installer. Because the app is **unsigned**, Windows SmartScreen may warn you — click **More info → Run anyway**.
+3. Launch NettUp from the Start Menu or desktop shortcut.
 
----
-
-## Installation
-
-1. **Download** the installer from the provided location
-2. **Run** the installer executable
-3. **Follow** the installation wizard
-4. **Launch** Financial Tracker from your Start Menu or Desktop shortcut
-5. **Activate** your license using the provided license key
+The app checks for updates on launch and installs them automatically.
 
 ---
 
 ## Getting Started
 
-### First Launch
+1. **New Project** — start a fresh financial profile from the welcome screen (or `Ctrl+N`).
+2. **Add your data** — income sources, debts, credit cards, installment plans, expenses, budgets, and goals.
+3. **Review** — the Dashboard, Analytics, and Charts tabs summarize everything.
 
-1. **Activate Your License**
-   - Enter your license key when prompted
-   - Your machine ID will be displayed for support purposes
-   - Keep your license key safe for future reference
+### Saving your work
 
-2. **Create Your First Project**
-   - Click "New Project" from the welcome screen
-   - Or use File → New from the menu
+- Projects are saved as **`.nettup`** files (human-readable JSON inside).
+- New projects default to **`Documents\NettUp\`**; you can save anywhere via **Save As**.
+- **Autosave** writes changes a couple of seconds after you stop editing; the `*` next to the filename means unsaved changes.
+- Double-clicking a `.nettup` file opens it in NettUp.
+- Older `.json` project files still open normally.
 
-3. **Add Your Financial Data**
-   - Start with your income sources
-   - Add your debts and monthly expenses
-   - Set up budgets for different categories
-   - Review your dashboard for insights
+### Keyboard shortcuts
 
-### Navigation
-
-- Use the sidebar menu to navigate between sections:
-  - **Dashboard**: Overview of your finances
-  - **Income**: Manage income sources
-  - **Debts**: Track debts and loans
-  - **Expenses**: Record and categorize expenses
-  - **Budget**: Set and monitor budgets
-  - **Analytics**: View detailed breakdowns
-  - **Visual Charts**: Interactive data visualizations
-  - **Logs**: Activity history
-  - **Reports**: Generate PDF reports
-
-### Saving Your Work
-
-- Your project auto-saves to the current file
-- Use File → Save to save manually
-- Use File → Save As to create a new copy
-- Projects are saved as .json files
+| Action | Shortcut |
+|---|---|
+| New Project | `Ctrl+N` |
+| Open Project | `Ctrl+O` |
+| Save | `Ctrl+S` |
+| Save As | `Ctrl+Shift+S` |
 
 ---
 
-## Tips & Tricks
+## Privacy
 
-### Number Input Spinners
-- Click the **up/down arrows** on number fields to increment/decrement values
-- **Click and hold** for rapid continuous updates
-- All currency values automatically limited to 2 decimal places
-
-### Expense & Debt Duplication
-- Use the **⋮** (three dots) menu to duplicate entries
-- Perfect for recurring expenses or similar debts
-
-### Smart Calculators
-- Payment plan calculator helps balance calculations
-- Shows payments remaining and suggested values
-
-### Keyboard Shortcuts
-- **Ctrl+N**: New Project
-- **Ctrl+O**: Open Project
-- **Ctrl+S**: Save Project
-- **Ctrl+Shift+S**: Save As
+- **Local-only:** all financial data lives on your machine in your own `.nettup` files.
+- **No accounts, no cloud, no telemetry.**
 
 ---
 
-## Data Management
+## Building from Source
 
-### File Format
-- Projects are saved as JSON files (.json)
-- Human-readable format
-- Easy to backup and share
+Requirements: Node.js 22+.
 
-### Backup Recommendations
-- Regular backups are recommended
-- Keep copies in cloud storage (OneDrive, Google Drive, etc.)
-- Export important data as PDF reports
+```bash
+npm install        # install dependencies
+npm run dev        # webpack dev server (hot reload)
+npm start          # build + launch the app
+npm test           # run unit tests
+npm run dist-win   # build the Windows installer into release/
+```
 
-### Recent Projects
-- Access recently opened projects from the welcome screen
-- Quick access to your most used files
+Releases are published automatically: bump `version` in `package.json`, then push a tag (`git tag vX.Y.Z && git push origin main --tags`). The GitHub Actions workflow builds and publishes the installer.
 
 ---
 
-## Troubleshooting
+## Tech Stack
 
-### License Issues
-- **Invalid License Key**: Double-check the key format (XXXX-XXXX-XXXX-XXXX)
-- **Already Activated**: Each key works for one machine installation
-- **Need Help**: Contact support with your Machine ID
-
-### Performance
-- Close unused projects to free memory
-- Keep project files under 5MB for optimal performance
-- Restart the application if it becomes slow
-
-### Data Issues
-- If file won't open, check file permissions
-- Ensure .json file is not corrupted (open in text editor)
-- Keep backup copies of important projects
+- **Electron** + **React** + **TypeScript**
+- **Recharts** (charts), **Bootstrap Icons** & **Simple Icons** (icons), **Inter** (font)
+- **electron-builder** (packaging) + **electron-updater** (auto-update)
 
 ---
 
-## Support & Contact
+## License
 
-**Developer**: LogiKore
-
-**Email Support**:
-- info@logikore.com
-- m.colon16@live.com
-
-**When Contacting Support, Please Include**:
-- Your license key
-- Machine ID (shown during activation)
-- Description of the issue
-- Screenshots if applicable
-- Operating system version
-
-**Response Time**: We aim to respond within 24-48 hours on business days.
-
----
-
-## Privacy & Security
-
-- **Local Storage**: All data is stored locally on your machine
-- **No Cloud Sync**: Your financial data never leaves your computer
-- **Encrypted License**: License information is encrypted locally
-- **No Telemetry**: We don't collect usage data or analytics
-
----
-
-## License Agreement
-
-This software is licensed, not sold. By using this software, you agree to:
-
-- Use one license per machine installation
-- Not share or distribute license keys
-- Not reverse engineer or modify the software
-- Use the software for personal or business financial tracking only
-
-For commercial licensing or volume licenses, please contact us.
-
----
-
-## Credits
-
-**Developed by**: LogiKore
-**Framework**: Electron + React
-**Icons**: Bootstrap Icons
-**Charts**: Recharts
-**Version**: 1.0.0
-**Release Date**: October 2025
-
----
-
-## Changelog
-
-### Version 1.0.0 (October 2025)
-- Initial release
-- Complete financial tracking suite
-- License activation system
-- PDF report generation
-- Analytics and visualizations
-- Budget management
-- Debt tracking with smart calculators
-- Custom number input spinners
-- Dark sonar-themed UI
-
----
-
-## Future Updates
-
-Stay tuned for upcoming features:
-- Recurring transaction automation
-- Bank account integration
-- Mobile companion app
-- Cloud backup options
-- Multi-currency support
-- Investment tracking
-
----
-
-**Thank you for choosing Financial Tracker!**
-
-For the latest updates and news, contact us at info@logikore.com
+MIT — see [LICENSE.txt](LICENSE.txt). Developed by **LogiKore**.
