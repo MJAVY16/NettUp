@@ -9,13 +9,9 @@ release/
 *.log
 npm-debug.log*
 
-# Local machine / license-activation artifacts
-production-keys.txt
-_ul
-_ul-*
-
 # Personal / sample project data
 MCarbonell.json
+*.nettup
 
 # OS / editor
 .DS_Store
