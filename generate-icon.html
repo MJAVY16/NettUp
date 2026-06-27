@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Financial Tracker Icon</title>
+    <style>
+        body {
+            background: #0a0e14;
+            color: #00ff9f;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        canvas {
+            border: 2px solid #00ff9f;
+            box-shadow: 0 0 20px rgba(0, 255, 159, 0.5);
+            margin: 20px;
+        }
+        button {
+            background: #000;
+            color: #00ff9f;
+            border: 2px solid #00ff9f;
+            padding: 15px 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #00ff9f;
+            color: #000;
+        }
+        .preview {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .info {
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.6;
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #00ff9f;
+            background: rgba(0, 255, 159, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>FINANCIAL TRACKER ICON GENERATOR</h1>
+
+    <div class="preview">
+        <canvas id="icon" width="512" height="512"></canvas>
+    </div>
+
+    <button onclick="downloadIcon()">DOWNLOAD ICON.PNG</button>
+
+    <div class="info">
+        <p><strong>INSTRUCTIONS:</strong></p>
+        <p>1. Click "DOWNLOAD ICON.PNG" to save the icon</p>
+        <p>2. Move the downloaded file to: <code>C:\Users\mcolo\OneDrive\Desktop\Financial Tracker\assets\icon.png</code></p>
+        <p>3. Restart the Financial Tracker app</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('icon');
+        const ctx = canvas.getContext('2d');
+        const size = 512;
+
+        // Draw icon
+        function drawIcon() {
+            // Background - dark with gradient
+            const bgGradient = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+            bgGradient.addColorStop(0, '#1a1a2e');
+            bgGradient.addColorStop(1, '#0a0e14');
+            ctx.fillStyle = bgGradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Outer glow circle
+            ctx.shadowBlur = 30;
+            ctx.shadowColor = '#00ff9f';
+            ctx.strokeStyle = '#00ff9f';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2 - 40, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Dollar sign - main symbol
+            ctx.font = 'bold 280px Arial';
+            ctx.fillStyle = '#00ff9f';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#00ff9f';
+            ctx.fillText('$', size/2, size/2 + 10);
+            ctx.shadowBlur = 0;
+
+            // Circuit lines for cyber theme
+            ctx.strokeStyle = '#00d4ff';
+            ctx.lineWidth = 3;
+
+            // Top left circuit
+            ctx.beginPath();
+            ctx.moveTo(80, 120);
+            ctx.lineTo(140, 120);
+            ctx.lineTo(140, 160);
+            ctx.stroke();
+
+            // Top right circuit
+            ctx.beginPath();
+            ctx.moveTo(size - 80, 120);
+            ctx.lineTo(size - 140, 120);
+            ctx.lineTo(size - 140, 160);
+            ctx.stroke();
+
+            // Bottom left circuit
+            ctx.beginPath();
+            ctx.moveTo(80, size - 120);
+            ctx.lineTo(140, size - 120);
+            ctx.lineTo(140, size - 160);
+            ctx.stroke();
+
+            // Bottom right circuit
+            ctx.beginPath();
+            ctx.moveTo(size - 80, size - 120);
+            ctx.lineTo(size - 140, size - 120);
+            ctx.lineTo(size - 140, size - 160);
+            ctx.stroke();
+
+            // Circuit nodes
+            ctx.fillStyle = '#00d4ff';
+            const nodes = [
+                [80, 120], [140, 120], [140, 160],
+                [size - 80, 120], [size - 140, 120], [size - 140, 160],
+                [80, size - 120], [140, size - 120], [140, size - 160],
+                [size - 80, size - 120], [size - 140, size - 120], [size - 140, size - 160]
+            ];
+
+            nodes.forEach(([x, y]) => {
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Corner brackets
+            ctx.strokeStyle = '#ff3366';
+            ctx.lineWidth = 4;
+
+            // Top left
+            ctx.beginPath();
+            ctx.moveTo(40, 80);
+            ctx.lineTo(40, 40);
+            ctx.lineTo(80, 40);
+            ctx.stroke();
+
+            // Top right
+            ctx.beginPath();
+            ctx.moveTo(size - 40, 80);
+            ctx.lineTo(size - 40, 40);
+            ctx.lineTo(size - 80, 40);
+            ctx.stroke();
+
+            // Bottom left
+            ctx.beginPath();
+            ctx.moveTo(40, size - 80);
+            ctx.lineTo(40, size - 40);
+            ctx.lineTo(80, size - 40);
+            ctx.stroke();
+
+            // Bottom right
+            ctx.beginPath();
+            ctx.moveTo(size - 40, size - 80);
+            ctx.lineTo(size - 40, size - 40);
+            ctx.lineTo(size - 80, size - 40);
+            ctx.stroke();
+        }
+
+        function downloadIcon() {
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'icon.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('Icon downloaded! Now move it to the assets folder and restart the app.');
+            });
+        }
+
+        // Draw the icon when page loads
+        drawIcon();
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{
+  "name": "financial-tracker",
+  "version": "1.0.2",
+  "description": "A comprehensive Windows financial tracking application",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "npm run build && electron .",
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production && tsc -p tsconfig.electron.json",
+    "electron": "electron .",
+    "electron-dev": "set NODE_ENV=development && electron .",
+    "dist": "npm run build && electron-builder",
+    "dist-win": "npm run build && electron-builder --win",
+    "release": "npm run build && electron-builder --win --publish always",
+    "generate-keys": "node scripts/generateKeys.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "financial",
+    "tracker",
+    "budget",
+    "debt",
+    "income"
+  ],
+  "author": "Financial Tracker",
+  "license": "MIT",
+  "build": {
+    "appId": "com.financialtracker.app",
+    "productName": "NettUp",
+    "directories": {
+      "output": "release"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "MJAVY16",
+        "repo": "NettUp"
+      }
+    ],
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icons/win/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "license": "LICENSE.txt"
+    }
+  },
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
+    "css-loader": "^7.1.2",
+    "electron": "^38.2.2",
+    "electron-builder": "^26.0.12",
+    "html-webpack-plugin": "^5.6.4",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "bootstrap-icons": "^1.13.1",
+    "date-fns": "^4.1.0",
+    "electron-store": "^11.0.2",
+    "electron-updater": "^6.8.9",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "recharts": "^3.2.1",
+    "simple-icons": "^16.24.0"
+  }
+}

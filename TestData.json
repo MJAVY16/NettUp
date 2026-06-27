@@ -1,0 +1,583 @@
+{
+  "id": "1728000000000",
+  "name": "Demo Financial Plan",
+  "createdAt": "2025-10-01T10:00:00.000Z",
+  "updatedAt": "2025-10-13T12:00:00.000Z",
+  "incomes": [
+    {
+      "source": "Primary Salary",
+      "amount": 5500,
+      "frequency": "semi-monthly",
+      "date": "2025-10-01",
+      "category": "Salary",
+      "notes": "Full-time employment - Tech company",
+      "id": "inc001"
+    },
+    {
+      "source": "Freelance Projects",
+      "amount": 1200,
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "category": "Freelance",
+      "notes": "Web development side projects",
+      "id": "inc002"
+    },
+    {
+      "source": "Rental Property Income",
+      "amount": 1800,
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "category": "Rental",
+      "notes": "2-bedroom apartment rental",
+      "id": "inc003"
+    },
+    {
+      "source": "Investment Dividends",
+      "amount": 250,
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "category": "Investment",
+      "notes": "Stock portfolio dividends",
+      "id": "inc004"
+    },
+    {
+      "source": "Annual Bonus",
+      "amount": 8000,
+      "frequency": "yearly",
+      "date": "2025-12-15",
+      "category": "Bonus",
+      "notes": "Year-end performance bonus",
+      "id": "inc005"
+    }
+  ],
+  "debts": [
+    {
+      "name": "Primary Residence Mortgage",
+      "type": "mortgage",
+      "balance": 325000,
+      "originalAmount": 350000,
+      "creditLimit": 0,
+      "interestRate": 3.5,
+      "minimumPayment": 1850,
+      "dueDate": 1,
+      "totalPayments": 0,
+      "paymentsMade": 0,
+      "notes": "30-year fixed rate mortgage",
+      "id": "debt001"
+    },
+    {
+      "name": "Auto Loan - Honda Accord",
+      "type": "loan",
+      "balance": 18500,
+      "originalAmount": 28000,
+      "creditLimit": 0,
+      "interestRate": 4.2,
+      "minimumPayment": 485,
+      "dueDate": 5,
+      "totalPayments": 0,
+      "paymentsMade": 0,
+      "notes": "5-year auto loan",
+      "id": "debt002"
+    },
+    {
+      "name": "Chase Sapphire Reserve",
+      "type": "credit-card",
+      "balance": 4250,
+      "originalAmount": 0,
+      "creditLimit": 25000,
+      "interestRate": 18.99,
+      "minimumPayment": 125,
+      "dueDate": 10,
+      "totalPayments": 0,
+      "paymentsMade": 0,
+      "notes": "Travel rewards card",
+      "id": "debt003"
+    },
+    {
+      "name": "Capital One Venture",
+      "type": "credit-card",
+      "balance": 2800,
+      "originalAmount": 0,
+      "creditLimit": 15000,
+      "interestRate": 16.5,
+      "minimumPayment": 85,
+      "dueDate": 15,
+      "totalPayments": 0,
+      "paymentsMade": 0,
+      "notes": "Miles rewards card",
+      "id": "debt004"
+    },
+    {
+      "name": "Best Buy - Gaming PC",
+      "type": "payment-plan",
+      "balance": 850,
+      "originalAmount": 2400,
+      "creditLimit": 0,
+      "interestRate": 0,
+      "minimumPayment": 100,
+      "dueDate": 12,
+      "totalPayments": 24,
+      "paymentsMade": 18,
+      "notes": "0% APR for 24 months",
+      "id": "debt005"
+    },
+    {
+      "name": "Amazon Store Card",
+      "type": "credit-card",
+      "balance": 1250,
+      "originalAmount": 0,
+      "creditLimit": 5000,
+      "interestRate": 24.99,
+      "minimumPayment": 50,
+      "dueDate": 18,
+      "totalPayments": 0,
+      "paymentsMade": 0,
+      "notes": "High interest - priority payoff",
+      "id": "debt006"
+    },
+    {
+      "name": "Student Loan - Federal",
+      "type": "loan",
+      "balance": 12500,
+      "originalAmount": 25000,
+      "creditLimit": 0,
+      "interestRate": 4.5,
+      "minimumPayment": 280,
+      "dueDate": 20,
+      "totalPayments": 0,
+      "paymentsMade": 0,
+      "notes": "Federal student loan",
+      "id": "debt007"
+    },
+    {
+      "name": "Home Improvement Loan",
+      "type": "loan",
+      "balance": 8900,
+      "originalAmount": 15000,
+      "creditLimit": 0,
+      "interestRate": 6.8,
+      "minimumPayment": 320,
+      "dueDate": 22,
+      "totalPayments": 0,
+      "paymentsMade": 0,
+      "notes": "Kitchen renovation",
+      "id": "debt008"
+    },
+    {
+      "name": "Affirm - MacBook Pro",
+      "type": "payment-plan",
+      "balance": 1200,
+      "originalAmount": 2800,
+      "creditLimit": 0,
+      "interestRate": 15,
+      "minimumPayment": 120,
+      "dueDate": 25,
+      "totalPayments": 24,
+      "paymentsMade": 16,
+      "notes": "Monthly payment plan",
+      "id": "debt009"
+    },
+    {
+      "name": "Target RedCard",
+      "type": "credit-card",
+      "balance": 580,
+      "originalAmount": 0,
+      "creditLimit": 3000,
+      "interestRate": 22.5,
+      "minimumPayment": 35,
+      "dueDate": 28,
+      "totalPayments": 0,
+      "paymentsMade": 0,
+      "notes": "5% discount on purchases",
+      "id": "debt010"
+    }
+  ],
+  "expenses": [
+    {
+      "name": "Electric Bill",
+      "amount": 145,
+      "category": "Utilities",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Average summer usage",
+      "id": "exp001"
+    },
+    {
+      "name": "Water & Sewer",
+      "amount": 75,
+      "category": "Utilities",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "",
+      "id": "exp002"
+    },
+    {
+      "name": "Internet - Fiber 1Gbps",
+      "amount": 85,
+      "category": "Utilities",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "High-speed internet for work",
+      "id": "exp003"
+    },
+    {
+      "name": "Cell Phone Plan",
+      "amount": 120,
+      "category": "Utilities",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Family plan - 4 lines",
+      "id": "exp004"
+    },
+    {
+      "name": "Gas (Heating)",
+      "amount": 55,
+      "category": "Utilities",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Lower in summer months",
+      "id": "exp005"
+    },
+    {
+      "name": "Groceries",
+      "amount": 800,
+      "category": "Food",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Family of 4",
+      "id": "exp006"
+    },
+    {
+      "name": "Dining Out",
+      "amount": 350,
+      "category": "Food",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": false,
+      "notes": "Restaurants and takeout",
+      "id": "exp007"
+    },
+    {
+      "name": "Car Insurance",
+      "amount": 180,
+      "category": "Insurance",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "2 vehicles",
+      "id": "exp008"
+    },
+    {
+      "name": "Home Insurance",
+      "amount": 125,
+      "category": "Insurance",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Homeowners policy",
+      "id": "exp009"
+    },
+    {
+      "name": "Health Insurance",
+      "amount": 450,
+      "category": "Insurance",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Family health plan",
+      "id": "exp010"
+    },
+    {
+      "name": "Life Insurance",
+      "amount": 95,
+      "category": "Insurance",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Term life policy",
+      "id": "exp011"
+    },
+    {
+      "name": "Gasoline",
+      "amount": 220,
+      "category": "Transportation",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Commute and errands",
+      "id": "exp012"
+    },
+    {
+      "name": "Netflix",
+      "amount": 22.99,
+      "category": "Entertainment",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": false,
+      "notes": "Premium plan",
+      "id": "exp013"
+    },
+    {
+      "name": "Spotify Family",
+      "amount": 16.99,
+      "category": "Entertainment",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": false,
+      "notes": "",
+      "id": "exp014"
+    },
+    {
+      "name": "Disney+ Bundle",
+      "amount": 24.99,
+      "category": "Entertainment",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": false,
+      "notes": "Disney+, Hulu, ESPN+",
+      "id": "exp015"
+    },
+    {
+      "name": "Gym Membership",
+      "amount": 65,
+      "category": "Health",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": false,
+      "notes": "Family membership",
+      "id": "exp016"
+    },
+    {
+      "name": "Childcare",
+      "amount": 1200,
+      "category": "Childcare",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "After-school program",
+      "id": "exp017"
+    },
+    {
+      "name": "Amazon Prime",
+      "amount": 14.99,
+      "category": "Other",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": false,
+      "notes": "",
+      "id": "exp018"
+    },
+    {
+      "name": "iCloud Storage",
+      "amount": 9.99,
+      "category": "Other",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": false,
+      "notes": "200GB plan",
+      "id": "exp019"
+    },
+    {
+      "name": "Adobe Creative Cloud",
+      "amount": 54.99,
+      "category": "Other",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": false,
+      "notes": "For freelance work",
+      "id": "exp020"
+    },
+    {
+      "name": "Pet Food & Care",
+      "amount": 85,
+      "category": "Pets",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "2 dogs",
+      "id": "exp021"
+    },
+    {
+      "name": "HOA Fees",
+      "amount": 250,
+      "category": "Housing",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Homeowners association",
+      "id": "exp022"
+    },
+    {
+      "name": "Property Tax",
+      "amount": 400,
+      "category": "Housing",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Annual tax divided by 12",
+      "id": "exp023"
+    },
+    {
+      "name": "Clothing",
+      "amount": 150,
+      "category": "Personal",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Average monthly spend",
+      "id": "exp024"
+    },
+    {
+      "name": "Personal Care",
+      "amount": 100,
+      "category": "Personal",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Haircuts, toiletries, etc.",
+      "id": "exp025"
+    },
+    {
+      "name": "Entertainment & Activities",
+      "amount": 200,
+      "category": "Entertainment",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": false,
+      "notes": "Movies, events, outings",
+      "id": "exp026"
+    },
+    {
+      "name": "Car Maintenance",
+      "amount": 100,
+      "category": "Transportation",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Oil changes, repairs fund",
+      "id": "exp027"
+    },
+    {
+      "name": "Medical Copays & Prescriptions",
+      "amount": 150,
+      "category": "Health",
+      "frequency": "monthly",
+      "date": "2025-10-01",
+      "isEssential": true,
+      "notes": "Average monthly healthcare costs",
+      "id": "exp028"
+    }
+  ],
+  "budgets": [
+    {
+      "category": "Food",
+      "allocated": 1200,
+      "spent": 1015.50,
+      "period": "monthly",
+      "id": "budget001"
+    },
+    {
+      "category": "Entertainment",
+      "allocated": 300,
+      "spent": 264.97,
+      "period": "monthly",
+      "id": "budget002"
+    },
+    {
+      "category": "Transportation",
+      "allocated": 400,
+      "spent": 320,
+      "period": "monthly",
+      "id": "budget003"
+    },
+    {
+      "category": "Personal",
+      "allocated": 250,
+      "spent": 182.50,
+      "period": "monthly",
+      "id": "budget004"
+    },
+    {
+      "category": "Utilities",
+      "allocated": 500,
+      "spent": 480,
+      "period": "monthly",
+      "id": "budget005"
+    }
+  ],
+  "settings": {
+    "currency": "USD",
+    "theme": "light"
+  },
+  "logs": [
+    {
+      "id": "log001",
+      "timestamp": "2025-10-01T10:00:00.000Z",
+      "type": "income",
+      "action": "added",
+      "description": "Added income source: Primary Salary",
+      "entityName": "Primary Salary",
+      "amount": 5500
+    },
+    {
+      "id": "log002",
+      "timestamp": "2025-10-01T10:05:00.000Z",
+      "type": "debt",
+      "action": "added",
+      "description": "Added debt: Primary Residence Mortgage",
+      "entityName": "Primary Residence Mortgage",
+      "amount": 325000
+    },
+    {
+      "id": "log003",
+      "timestamp": "2025-10-05T14:30:00.000Z",
+      "type": "debt",
+      "action": "updated",
+      "description": "Updated debt: Auto Loan - Honda Accord",
+      "entityName": "Auto Loan - Honda Accord",
+      "amount": 18500
+    },
+    {
+      "id": "log004",
+      "timestamp": "2025-10-10T09:15:00.000Z",
+      "type": "expense",
+      "action": "added",
+      "description": "Added expense: Groceries",
+      "entityName": "Groceries",
+      "amount": 800
+    },
+    {
+      "id": "log005",
+      "timestamp": "2025-10-10T16:45:00.000Z",
+      "type": "budget",
+      "action": "added",
+      "description": "Added budget for: Food",
+      "entityName": "Food",
+      "amount": 1200
+    },
+    {
+      "id": "log006",
+      "timestamp": "2025-10-12T11:20:00.000Z",
+      "type": "milestone",
+      "action": "paid-off",
+      "description": "Debt paid off: Best Buy - Gaming PC",
+      "entityName": "Best Buy - Gaming PC",
+      "amount": 850
+    },
+    {
+      "id": "log007",
+      "timestamp": "2025-10-13T08:00:00.000Z",
+      "type": "debt",
+      "action": "updated",
+      "description": "Updated debt: Chase Sapphire Reserve",
+      "entityName": "Chase Sapphire Reserve",
+      "amount": 4250
+    }
+  ]
+}
