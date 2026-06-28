@@ -20,6 +20,8 @@ import WelcomeScreen from './components/WelcomeScreen';
 import Settings from './components/Settings';
 import Clock from './components/Clock';
 import FileMenu from './components/FileMenu';
+import DuePaymentsModal from './components/DuePaymentsModal';
+import { getDuePayments, applyDuePayment, mostRecentDueDate, DuePayment } from './utils/paymentHelpers';
 import appIcon from '../../assets/icons/png/64x64.png';
 import { initNumberInputSpinners } from './utils/numberInputSpinners';
 import { setCurrencyConfig } from './utils/formatters';
@@ -38,6 +40,7 @@ const App: React.FC = () => {
   const [project, setProject] = useState<FinancialProject | null>(null);
   const [currentFilePath, setCurrentFilePath] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [duePayments, setDuePayments] = useState<DuePayment[]>([]);
 
   // Initialize number input spinners
   useEffect(() => {
@@ -302,6 +305,17 @@ const App: React.FC = () => {
       migrated.budgets = migrated.budgets.map(({ spent, ...rest }: any) => rest);
     }
 
+    // Baseline lastPaymentDate so due-payment detection starts from "now"
+    // instead of retroactively surfacing every past cycle.
+    if (migrated.debts) {
+      const now = new Date();
+      migrated.debts = migrated.debts.map((d: any) => ({
+        ...d,
+        lastPaymentDate: d.lastPaymentDate
+          || (typeof d.dueDate === 'number' ? mostRecentDueDate(d.dueDate, now).toISOString() : undefined)
+      }));
+    }
+
     return migrated as FinancialProject;
   };
 
@@ -526,6 +540,53 @@ const App: React.FC = () => {
     };
     updateProject({ logs: [...project.logs, newLog] });
   };
+
+  // --- Due payments (auto-apply / confirm) ---
+  // Applies a batch of due payments in a single update (avoids stale-state
+  // races from applying them one-by-one).
+  const applyDuePaymentsBatch = (list: DuePayment[]) => {
+    if (!project || list.length === 0) return;
+    const updatesById = new Map(list.map(d => [d.debt.id, applyDuePayment(d)]));
+    const newDebts = project.debts.map(d => {
+      const u = updatesById.get(d.id);
+      return u ? { ...d, ...u } : d;
+    });
+    const newLogs: LogEntry[] = list.map(d => ({
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toISOString(),
+      type: 'debt',
+      action: 'updated',
+      description: `Payment applied: ${d.debt.name}`,
+      entityName: d.debt.name,
+      amount: d.totalAmount,
+    }));
+    updateProject({ debts: newDebts, logs: [...project.logs, ...newLogs] });
+  };
+
+  const handleConfirmPayment = (due: DuePayment) => {
+    applyDuePaymentsBatch([due]);
+    setDuePayments(prev => prev.filter(p => p.debt.id !== due.debt.id));
+  };
+
+  const handleConfirmAllPayments = () => {
+    applyDuePaymentsBatch(duePayments);
+    setDuePayments([]);
+  };
+
+  // When a project loads, detect payments that have come due. Auto-apply them
+  // if the setting is on, otherwise surface them for confirmation.
+  useEffect(() => {
+    if (!project) return;
+    const due = getDuePayments(project.debts, new Date());
+    if (due.length === 0) return;
+    if (project.settings.autoApplyPayments) {
+      applyDuePaymentsBatch(due);
+    } else {
+      setDuePayments(due);
+    }
+    // Intentionally keyed to the loaded project, not every edit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project?.id]);
 
   const renderContent = () => {
     if (!project) return null;
@@ -775,6 +836,14 @@ const App: React.FC = () => {
           </div>
         </main>
       </div>
+      {duePayments.length > 0 && (
+        <DuePaymentsModal
+          payments={duePayments}
+          onConfirm={handleConfirmPayment}
+          onConfirmAll={handleConfirmAllPayments}
+          onDismiss={() => setDuePayments([])}
+        />
+      )}
     </div>
   );
 };

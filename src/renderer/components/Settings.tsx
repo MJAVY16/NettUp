@@ -164,6 +164,26 @@ const Settings: React.FC<SettingsProps> = ({ project, onUpdateSettings }) => {
           </div>
         </div>
 
+        {/* Payments */}
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ margin: '0 0 1rem', fontSize: '1rem' }}>
+            <i className="bi bi-calendar-check"></i> Payments
+          </h3>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', color: 'var(--text-primary)' }}>
+            <input
+              type="checkbox"
+              checked={!!project.settings.autoApplyPayments}
+              onChange={(e) => onUpdateSettings({ autoApplyPayments: e.target.checked })}
+            />
+            <span>
+              Automatically apply payments when due
+              <span style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                When off, NettUp asks you to confirm due payments on open.
+              </span>
+            </span>
+          </label>
+        </div>
+
         {/* About */}
         <div>
           <h3 style={{ margin: '0 0 1rem', fontSize: '1rem' }}>

@@ -24,6 +24,7 @@ export interface Debt {
   totalPayments?: number;
   paymentsMade?: number;
   startDate?: string;
+  lastPaymentDate?: string; // ISO date through which scheduled payments are accounted
   notes?: string;
 }
 
@@ -106,6 +107,7 @@ export interface FinancialProject {
   settings: {
     currency: string;
     theme: 'light' | 'dark' | 'spy';
+    autoApplyPayments?: boolean; // auto-apply due payments on open instead of confirming
   };
   syncMetadata?: SyncMetadata;
 }
