@@ -496,7 +496,7 @@ const DebtManager: React.FC<DebtManagerProps> = ({ debts, onAdd, onUpdate, onDel
                           <div className="progress-bar">
                             <div
                               className="progress-bar-fill"
-                              style={{ width: `${Math.min(progress, 100)}%`, backgroundColor: progressColor }}
+                              style={{ width: `${Math.min(progress, 100)}%`, background: progressColor }}
                             />
                           </div>
                           <small>{progressLabel}</small>

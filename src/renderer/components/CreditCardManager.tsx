@@ -193,7 +193,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cards, onAdd, onU
                       ) : (
                         <>
                           <div className="progress-bar">
-                            <div className="progress-bar-fill" style={{ width: `${Math.min(utilization, 100)}%`, backgroundColor: color }} />
+                            <div className="progress-bar-fill" style={{ width: `${Math.min(utilization, 100)}%`, background: color }} />
                           </div>
                           <small style={{ color }}>{utilization.toFixed(0)}% used</small>
                         </>

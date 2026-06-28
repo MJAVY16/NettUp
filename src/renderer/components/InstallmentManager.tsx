@@ -174,7 +174,7 @@ const InstallmentManager: React.FC<InstallmentManagerProps> = ({ plans, onAdd, o
                     </td>
                     <td style={{ minWidth: '140px' }}>
                       <div className="progress-bar">
-                        <div className="progress-bar-fill" style={{ width: `${Math.min(progress, 100)}%`, backgroundColor: color }} />
+                        <div className="progress-bar-fill" style={{ width: `${Math.min(progress, 100)}%`, background: color }} />
                       </div>
                       <small style={{ color }}>{made}/{total} · {remaining} left</small>
                     </td>

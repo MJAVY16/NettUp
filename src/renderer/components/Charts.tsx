@@ -41,6 +41,19 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
     { id: 'hatch11', path: 'M0,0 l4,0 M0,4 l4,0' }, // Wide horizontal
   ];
 
+  // Theme-aware styling. Spy keeps its neon "blueprint" look (hatch fills,
+  // accent grids); Light/Dark get solid fills, a muted palette, and neutral
+  // grid/axis colors for a cleaner, modern chart.
+  const isSpy = (document.documentElement.getAttribute('data-theme') || 'light') === 'spy';
+  const MODERN_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16', '#06b6d4', '#e11d48'];
+  const palette = isSpy ? COLORS : MODERN_COLORS;
+  const gridStroke = isSpy ? 'var(--primary-color)' : 'var(--border-color)';
+  const gridOpacity = isSpy ? 0.2 : 0.6;
+  const axisStroke = isSpy ? 'var(--primary-color)' : 'var(--text-secondary)';
+  const cellFill = (prefix: string, index: number) =>
+    isSpy ? `url(#${prefix}-${HATCH_PATTERNS[index % HATCH_PATTERNS.length].id})` : palette[index % palette.length];
+  const cellStroke = (index: number) => (isSpy ? COLORS[index % COLORS.length] : 'var(--surface-color)');
+
   const incomeByCategory = project.incomes.reduce((acc, income) => {
     const monthly = calculateMonthlyAmount(income.amount, income.frequency);
     acc[income.category] = (acc[income.category] || 0) + monthly;
@@ -186,9 +199,9 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
                     <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="var(--primary-color)" strokeWidth="0.5" opacity="0.3" />
                   </pattern>
                 </defs>
-                <CartesianGrid strokeDasharray="5 5" stroke="var(--primary-color)" opacity={0.2} />
-                <XAxis dataKey="name" stroke="var(--primary-color)" style={{ fontSize: '12px', fontFamily: 'var(--font-family)' }} />
-                <YAxis stroke="var(--primary-color)" style={{ fontSize: '12px', fontFamily: 'var(--font-family)' }} />
+                <CartesianGrid strokeDasharray="5 5" stroke={gridStroke} opacity={gridOpacity} />
+                <XAxis dataKey="name" stroke={axisStroke} style={{ fontSize: '12px', fontFamily: 'var(--font-family)' }} />
+                <YAxis stroke={axisStroke} style={{ fontSize: '12px', fontFamily: 'var(--font-family)' }} />
                 <Tooltip
                   formatter={(value: any) => `$${parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                   contentStyle={{ background: 'var(--surface-color)', border: '1px solid var(--primary-color)', fontFamily: 'var(--font-family)', fontSize: '12px' }}
@@ -198,8 +211,8 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
                 <Legend wrapperStyle={{ fontFamily: 'var(--font-family)', fontSize: '12px' }} onClick={() => {}} />
                 <Bar
                   dataKey="value"
-                  fill="url(#diagonalHatch)"
-                  stroke="var(--primary-color)"
+                  fill={isSpy ? 'url(#diagonalHatch)' : 'var(--primary-color)'}
+                  stroke={isSpy ? 'var(--primary-color)' : 'none'}
                   strokeWidth={1.5}
                   name="Amount"
                 />
@@ -238,8 +251,8 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
                   {incomeData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={`url(#income-${HATCH_PATTERNS[index % HATCH_PATTERNS.length].id})`}
-                      stroke={COLORS[index % COLORS.length]}
+                      fill={cellFill('income', index)}
+                      stroke={cellStroke(index)}
                       strokeWidth={2}
                     />
                   ))}
@@ -288,8 +301,8 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
                   {expenseData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={`url(#expense-${HATCH_PATTERNS[index % HATCH_PATTERNS.length].id})`}
-                      stroke={COLORS[index % COLORS.length]}
+                      fill={cellFill('expense', index)}
+                      stroke={cellStroke(index)}
                       strokeWidth={2}
                     />
                   ))}
@@ -337,8 +350,8 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
                     {debtData.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        fill={`url(#debt-${HATCH_PATTERNS[index % HATCH_PATTERNS.length].id})`}
-                        stroke={COLORS[index % COLORS.length]}
+                        fill={cellFill('debt', index)}
+                        stroke={cellStroke(index)}
                         strokeWidth={2}
                       />
                     ))}
@@ -369,9 +382,9 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
                   <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="var(--info-color)" strokeWidth="0.5" opacity="0.1" />
                 </pattern>
               </defs>
-              <CartesianGrid strokeDasharray="5 5" stroke="var(--info-color)" opacity={0.2} />
-              <XAxis dataKey="month" stroke="var(--info-color)" style={{ fontSize: '12px', fontFamily: 'var(--font-family)' }} />
-              <YAxis stroke="var(--info-color)" style={{ fontSize: '12px', fontFamily: 'var(--font-family)' }} />
+              <CartesianGrid strokeDasharray="5 5" stroke={gridStroke} opacity={gridOpacity} />
+              <XAxis dataKey="month" stroke={axisStroke} style={{ fontSize: '12px', fontFamily: 'var(--font-family)' }} />
+              <YAxis stroke={axisStroke} style={{ fontSize: '12px', fontFamily: 'var(--font-family)' }} />
               <Tooltip
                 formatter={(value: any) => `$${parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                 contentStyle={{ background: 'var(--surface-color)', border: '1px solid var(--info-color)', fontFamily: 'var(--font-family)', fontSize: '12px' }}
@@ -458,13 +471,15 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
                         top: 0,
                         height: '100%',
                         width: `${percentage}%`,
-                        background: 'url(#paidHatch)',
+                        background: isSpy ? 'url(#paidHatch)' : 'var(--success-color)',
                         borderRight: percentage > 0 && percentage < 100 ? '1px solid var(--success-color)' : 'none',
                         transition: 'width 0.3s ease'
                       }}>
-                        <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
-                          <rect width="100%" height="100%" fill="url(#paidHatch)" />
-                        </svg>
+                        {isSpy && (
+                          <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
+                            <rect width="100%" height="100%" fill="url(#paidHatch)" />
+                          </svg>
+                        )}
                       </div>
 
                       {/* Remaining portion (red) */}
@@ -474,12 +489,14 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
                         top: 0,
                         height: '100%',
                         width: `${100 - percentage}%`,
-                        background: 'url(#balanceHatch)',
+                        background: isSpy ? 'url(#balanceHatch)' : 'var(--danger-color)',
                         transition: 'width 0.3s ease'
                       }}>
-                        <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
-                          <rect width="100%" height="100%" fill="url(#balanceHatch)" />
-                        </svg>
+                        {isSpy && (
+                          <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
+                            <rect width="100%" height="100%" fill="url(#balanceHatch)" />
+                          </svg>
+                        )}
                       </div>
 
                       {/* Center text overlay */}
