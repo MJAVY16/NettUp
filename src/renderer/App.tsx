@@ -24,7 +24,7 @@ import DuePaymentsModal from './components/DuePaymentsModal';
 import { getDuePayments, applyDuePayment, mostRecentDueDate, DuePayment } from './utils/paymentHelpers';
 import appIcon from '../../assets/icons/png/64x64.png';
 import { initNumberInputSpinners } from './utils/numberInputSpinners';
-import { setCurrencyConfig } from './utils/formatters';
+import { setCurrencyConfig, formatCurrencyWithSymbol } from './utils/formatters';
 
 interface RecentProject {
   name: string;
@@ -603,9 +603,42 @@ const App: React.FC = () => {
             onDelete={deleteIncome}
           />
         );
-      case 'debts':
+      case 'debts': {
+        const allDebts = project.debts;
+        const debtTotal = allDebts.reduce((sum, d) => sum + d.balance, 0);
+        const debtMonthly = allDebts.reduce((sum, d) => sum + (d.minimumPayment || 0), 0);
+        const debtAvgInterest = allDebts.length > 0
+          ? allDebts.reduce((sum, d) => sum + d.interestRate, 0) / allDebts.length
+          : 0;
         return (
           <>
+            <div className="section">
+              <div className="section-header">
+                <h2 className="section-title">Debt Overview</h2>
+              </div>
+              <div className="dashboard-grid">
+                <div className="stat-card">
+                  <div className="stat-card-header">
+                    <span className="stat-card-title">Total Debt</span>
+                  </div>
+                  <div className="stat-card-value" style={{ color: 'var(--danger-color)' }}>
+                    {formatCurrencyWithSymbol(debtTotal)}
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-card-header">
+                    <span className="stat-card-title">Monthly Payments</span>
+                  </div>
+                  <div className="stat-card-value">{formatCurrencyWithSymbol(debtMonthly)}</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-card-header">
+                    <span className="stat-card-title">Avg Interest Rate</span>
+                  </div>
+                  <div className="stat-card-value">{debtAvgInterest.toFixed(2)}%</div>
+                </div>
+              </div>
+            </div>
             <DebtManager
               debts={project.debts.filter(d => d.type !== 'credit-card' && d.type !== 'payment-plan')}
               onAdd={addDebt}
@@ -626,6 +659,7 @@ const App: React.FC = () => {
             />
           </>
         );
+      }
       case 'expenses':
         return (
           <ExpenseManager

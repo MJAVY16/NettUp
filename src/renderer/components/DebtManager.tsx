@@ -3,6 +3,10 @@ import { Debt } from '../types';
 import { formatCurrencyWithSymbol } from '../utils/formatters';
 import { severityColor } from '../utils/debtHelpers';
 
+// True loans live in the main "Loans" section; every other type routed here
+// (personal, other) drops into the separate "Other Debts" section below.
+const LOAN_TYPES: Debt['type'][] = ['loan', 'mortgage', 'auto', 'student'];
+
 interface DebtManagerProps {
   debts: Debt[];
   onAdd: (debt: Debt) => void;
@@ -82,11 +86,9 @@ const DebtManager: React.FC<DebtManagerProps> = ({ debts, onAdd, onUpdate, onDel
     onAdd(duplicatedDebt as Debt);
   };
 
-  const totalDebt = debts.reduce((sum, debt) => sum + debt.balance, 0);
-  const totalMinimumPayments = debts.reduce((sum, debt) => sum + debt.minimumPayment, 0);
-  const averageInterestRate = debts.length > 0
-    ? debts.reduce((sum, debt) => sum + debt.interestRate, 0) / debts.length
-    : 0;
+  const loanDebts = debts.filter(d => LOAN_TYPES.includes(d.type));
+  const otherDebts = debts.filter(d => !LOAN_TYPES.includes(d.type));
+  const otherTotal = otherDebts.reduce((sum, debt) => sum + debt.balance, 0);
 
   const getDebtTypeColor = (type: Debt['type']): string => {
     const colors: Record<Debt['type'], string> = {
@@ -116,62 +118,139 @@ const DebtManager: React.FC<DebtManagerProps> = ({ debts, onAdd, onUpdate, onDel
     return labels[type] || type;
   };
 
-  // Filter and sort debts
-  const filteredAndSortedDebts = useMemo(() => {
-    let filtered = filterType === 'all' ? debts : debts.filter(d => d.type === filterType);
+  const sortComparator = (a: Debt, b: Debt) => {
+    switch (sortBy) {
+      case 'balance': return b.balance - a.balance;
+      case 'interest': return b.interestRate - a.interestRate;
+      case 'name': return a.name.localeCompare(b.name);
+      case 'type':
+      default: return a.type.localeCompare(b.type);
+    }
+  };
 
-    return [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case 'balance': return b.balance - a.balance;
-        case 'interest': return b.interestRate - a.interestRate;
-        case 'name': return a.name.localeCompare(b.name);
-        case 'type':
-        default: return a.type.localeCompare(b.type);
-      }
-    });
-  }, [debts, filterType, sortBy]);
+  // Filter (by loan type) and sort the loans; the "other" bucket only sorts.
+  const filteredAndSortedLoans = useMemo(() => {
+    const filtered = filterType === 'all' ? loanDebts : loanDebts.filter(d => d.type === filterType);
+    return [...filtered].sort(sortComparator);
+  }, [loanDebts, filterType, sortBy]);
+
+  const sortedOtherDebts = useMemo(() => [...otherDebts].sort(sortComparator), [otherDebts, sortBy]);
 
   const filterTypes: Array<{ value: Debt['type'] | 'all'; label: string }> = [
     { value: 'all', label: 'All' },
     { value: 'loan', label: 'Loans' },
     { value: 'mortgage', label: 'Mortgage' },
     { value: 'auto', label: 'Auto' },
-    { value: 'student', label: 'Student' },
-    { value: 'personal', label: 'Personal' },
-    { value: 'other', label: 'Other' }
+    { value: 'student', label: 'Student' }
   ];
+
+  const renderDebtRow = (debt: Debt) => {
+    let progress = 0;
+    let progressLabel = '';
+    let progressColor = '';
+
+    if (debt.type === 'credit-card' && debt.creditLimit) {
+      // Credit utilization: the more of the limit used, the redder.
+      progress = (debt.balance / debt.creditLimit) * 100;
+      progressLabel = `${progress.toFixed(0)}% used`;
+      progressColor = severityColor(debt.balance / debt.creditLimit);
+    } else if (debt.type === 'payment-plan' && debt.totalPayments && debt.paymentsMade !== undefined) {
+      // Payment plan: the fewer payments remaining, the greener.
+      progress = (debt.paymentsMade / debt.totalPayments) * 100;
+      progressLabel = `${debt.paymentsMade}/${debt.totalPayments} payments`;
+      progressColor = severityColor(1 - debt.paymentsMade / debt.totalPayments);
+    } else if (debt.originalAmount) {
+      // Other debts: the less balance remaining, the greener.
+      progress = ((debt.originalAmount - debt.balance) / debt.originalAmount) * 100;
+      progressLabel = `${progress.toFixed(0)}% paid`;
+      progressColor = severityColor(debt.balance / debt.originalAmount);
+    }
+
+    return (
+      <tr key={debt.id}>
+        <td>{debt.name}</td>
+        <td>
+          <span className={`badge badge-${getDebtTypeColor(debt.type)}`}>
+            {getDebtTypeLabel(debt.type)}
+          </span>
+        </td>
+        <td style={{ color: 'var(--danger-color)' }}>
+          {formatCurrencyWithSymbol(debt.balance)}
+        </td>
+        <td>{debt.interestRate}%</td>
+        <td>{formatCurrencyWithSymbol(debt.minimumPayment)}</td>
+        <td>
+          {(progress > 0 || progressLabel) ? (
+            <div style={{ width: '120px' }}>
+              <div className="progress-bar">
+                <div
+                  className="progress-bar-fill"
+                  style={{ width: `${Math.min(progress, 100)}%`, background: progressColor }}
+                />
+              </div>
+              <small>{progressLabel}</small>
+            </div>
+          ) : null}
+        </td>
+        <td>Day {debt.dueDate}</td>
+        <td>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button className="btn btn-icon" onClick={() => handleEdit(debt)}>
+              <i className="bi bi-pencil"></i>
+            </button>
+            <button className="btn btn-icon" onClick={() => onDelete(debt.id)}>
+              <i className="bi bi-trash"></i>
+            </button>
+            <div style={{ position: 'relative' }}>
+              <button
+                className="btn btn-icon"
+                onClick={() => setOpenMenuId(openMenuId === debt.id ? null : debt.id)}
+              >
+                <i className="bi bi-three-dots-vertical"></i>
+              </button>
+              {openMenuId === debt.id && (
+                <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    className="dropdown-menu-item"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDuplicate(debt);
+                    }}
+                  >
+                    <i className="bi bi-files"></i> Duplicate
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </td>
+      </tr>
+    );
+  };
+
+  const debtTableHead = (
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Balance</th>
+        <th>Interest Rate</th>
+        <th>Min Payment</th>
+        <th>Progress</th>
+        <th>Due Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+  );
 
   return (
     <div className="debt-manager">
       <div className="section">
         <div className="section-header">
-          <h2 className="section-title">Debt Management</h2>
+          <h2 className="section-title">Loans</h2>
           <button className="btn btn-primary" onClick={() => setShowAddForm(!showAddForm)}>
             {showAddForm ? 'Cancel' : '+ Add Debt'}
           </button>
-        </div>
-
-        <div className="dashboard-grid" style={{ marginBottom: '2rem' }}>
-          <div className="stat-card">
-            <div className="stat-card-header">
-              <span className="stat-card-title">Total Debt</span>
-            </div>
-            <div className="stat-card-value" style={{ color: 'var(--danger-color)' }}>
-              {formatCurrencyWithSymbol(totalDebt)}
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-card-header">
-              <span className="stat-card-title">Monthly Payments</span>
-            </div>
-            <div className="stat-card-value">{formatCurrencyWithSymbol(totalMinimumPayments)}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-card-header">
-              <span className="stat-card-title">Avg Interest Rate</span>
-            </div>
-            <div className="stat-card-value">{averageInterestRate.toFixed(2)}%</div>
-          </div>
         </div>
 
         {showAddForm && (
@@ -404,11 +483,11 @@ const DebtManager: React.FC<DebtManagerProps> = ({ debts, onAdd, onUpdate, onDel
         )}
 
         {/* Filter & Sort Bar */}
-        {debts.length > 0 && (
+        {loanDebts.length > 0 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
               {filterTypes.map(ft => {
-                const count = ft.value === 'all' ? debts.length : debts.filter(d => d.type === ft.value).length;
+                const count = ft.value === 'all' ? loanDebts.length : loanDebts.filter(d => d.type === ft.value).length;
                 if (ft.value !== 'all' && count === 0) return null;
                 return (
                   <button
@@ -440,123 +519,50 @@ const DebtManager: React.FC<DebtManagerProps> = ({ debts, onAdd, onUpdate, onDel
           </div>
         )}
 
-        {filteredAndSortedDebts.length > 0 ? (
+        {filteredAndSortedLoans.length > 0 ? (
           <table className="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Balance</th>
-                <th>Interest Rate</th>
-                <th>Min Payment</th>
-                <th>Progress</th>
-                <th>Due Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+            {debtTableHead}
             <tbody>
-              {filteredAndSortedDebts.map((debt) => {
-                let progress = 0;
-                let progressLabel = '';
-                let progressColor = '';
-
-                if (debt.type === 'credit-card' && debt.creditLimit) {
-                  // Credit utilization: the more of the limit used, the redder.
-                  progress = (debt.balance / debt.creditLimit) * 100;
-                  progressLabel = `${progress.toFixed(0)}% used`;
-                  progressColor = severityColor(debt.balance / debt.creditLimit);
-                } else if (debt.type === 'payment-plan' && debt.totalPayments && debt.paymentsMade !== undefined) {
-                  // Payment plan: the fewer payments remaining, the greener.
-                  progress = (debt.paymentsMade / debt.totalPayments) * 100;
-                  progressLabel = `${debt.paymentsMade}/${debt.totalPayments} payments`;
-                  progressColor = severityColor(1 - debt.paymentsMade / debt.totalPayments);
-                } else if (debt.originalAmount) {
-                  // Other debts: the less balance remaining, the greener.
-                  progress = ((debt.originalAmount - debt.balance) / debt.originalAmount) * 100;
-                  progressLabel = `${progress.toFixed(0)}% paid`;
-                  progressColor = severityColor(debt.balance / debt.originalAmount);
-                }
-
-                return (
-                  <tr key={debt.id}>
-                    <td>{debt.name}</td>
-                    <td>
-                      <span className={`badge badge-${getDebtTypeColor(debt.type)}`}>
-                        {getDebtTypeLabel(debt.type)}
-                      </span>
-                    </td>
-                    <td style={{ color: 'var(--danger-color)' }}>
-                      {formatCurrencyWithSymbol(debt.balance)}
-                    </td>
-                    <td>{debt.interestRate}%</td>
-                    <td>{formatCurrencyWithSymbol(debt.minimumPayment)}</td>
-                    <td>
-                      {(progress > 0 || progressLabel) ? (
-                        <div style={{ width: '120px' }}>
-                          <div className="progress-bar">
-                            <div
-                              className="progress-bar-fill"
-                              style={{ width: `${Math.min(progress, 100)}%`, background: progressColor }}
-                            />
-                          </div>
-                          <small>{progressLabel}</small>
-                        </div>
-                      ) : null}
-                    </td>
-                    <td>Day {debt.dueDate}</td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <button className="btn btn-icon" onClick={() => handleEdit(debt)}>
-                          <i className="bi bi-pencil"></i>
-                        </button>
-                        <button className="btn btn-icon" onClick={() => onDelete(debt.id)}>
-                          <i className="bi bi-trash"></i>
-                        </button>
-                        <div style={{ position: 'relative' }}>
-                          <button
-                            className="btn btn-icon"
-                            onClick={() => setOpenMenuId(openMenuId === debt.id ? null : debt.id)}
-                          >
-                            <i className="bi bi-three-dots-vertical"></i>
-                          </button>
-                          {openMenuId === debt.id && (
-                            <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
-                              <button
-                                className="dropdown-menu-item"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDuplicate(debt);
-                                }}
-                              >
-                                <i className="bi bi-files"></i> Duplicate
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+              {filteredAndSortedLoans.map(renderDebtRow)}
             </tbody>
           </table>
-        ) : debts.length > 0 ? (
+        ) : loanDebts.length > 0 ? (
           <div className="empty-state">
-            <div className="empty-state-text">No debts match the current filter</div>
+            <div className="empty-state-text">No loans match the current filter</div>
             <button className="btn btn-primary" onClick={() => setFilterType('all')}>
-              Show All Debts
+              Show All Loans
             </button>
           </div>
         ) : (
           <div className="empty-state">
             <div className="empty-state-icon"><i className="bi bi-credit-card-2-back"></i></div>
-            <div className="empty-state-text">No debts added yet</div>
+            <div className="empty-state-text">
+              {debts.length > 0 ? 'No loans yet' : 'No debts added yet'}
+            </div>
             <button className="btn btn-primary" onClick={() => setShowAddForm(true)}>
-              Add Your First Debt
+              {debts.length > 0 ? 'Add a Loan' : 'Add Your First Debt'}
             </button>
           </div>
         )}
       </div>
+
+      {otherDebts.length > 0 && (
+        <div className="section">
+          <div className="section-header">
+            <h2 className="section-title">Other Debts</h2>
+          </div>
+          <div style={{ marginBottom: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            {otherDebts.length} {otherDebts.length === 1 ? 'debt' : 'debts'} · Balance{' '}
+            <strong style={{ color: 'var(--danger-color)' }}>{formatCurrencyWithSymbol(otherTotal)}</strong>
+          </div>
+          <table className="table">
+            {debtTableHead}
+            <tbody>
+              {sortedOtherDebts.map(renderDebtRow)}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

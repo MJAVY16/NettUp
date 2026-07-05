@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Debt } from '../types';
 import { formatCurrencyWithSymbol } from '../utils/formatters';
 import { severityColor } from '../utils/debtHelpers';
 import ProviderLogo, { PROVIDER_OPTIONS, PROVIDER_LABELS } from './ProviderLogo';
+import InstallmentScheduleModal from './InstallmentScheduleModal';
 
 interface InstallmentManagerProps {
   plans: Debt[];
@@ -29,6 +30,8 @@ const InstallmentManager: React.FC<InstallmentManagerProps> = ({ plans, onAdd, o
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Debt>>(emptyForm);
+  const [sortBy, setSortBy] = useState<'balance' | 'progress' | 'payment' | 'due' | 'name' | 'servicer'>('due');
+  const [viewingPlan, setViewingPlan] = useState<Debt | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +56,21 @@ const InstallmentManager: React.FC<InstallmentManagerProps> = ({ plans, onAdd, o
 
   const totalRemaining = plans.reduce((sum, p) => sum + p.balance, 0);
   const totalMonthly = plans.reduce((sum, p) => sum + (p.minimumPayment || 0), 0);
+
+  const sortedPlans = useMemo(() => {
+    const pct = (p: Debt) => (p.totalPayments && p.totalPayments > 0 ? (p.paymentsMade || 0) / p.totalPayments : 0);
+    return [...plans].sort((a, b) => {
+      switch (sortBy) {
+        case 'balance': return b.balance - a.balance;
+        case 'progress': return pct(b) - pct(a);
+        case 'payment': return (b.minimumPayment || 0) - (a.minimumPayment || 0);
+        case 'name': return a.name.localeCompare(b.name);
+        case 'servicer': return (a.provider || 'other').localeCompare(b.provider || 'other');
+        case 'due':
+        default: return a.dueDate - b.dueDate;
+      }
+    });
+  }, [plans, sortBy]);
 
   return (
     <div className="installment-manager">
@@ -140,6 +158,24 @@ const InstallmentManager: React.FC<InstallmentManagerProps> = ({ plans, onAdd, o
           </form>
         )}
 
+        {plans.length > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+            <select
+              className="form-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              style={{ width: 'auto', padding: '0.25rem 0.5rem', fontSize: '11px' }}
+            >
+              <option value="due">Sort: Due Date</option>
+              <option value="balance">Sort: Remaining</option>
+              <option value="progress">Sort: Progress</option>
+              <option value="payment">Sort: Payment</option>
+              <option value="servicer">Sort: Servicer</option>
+              <option value="name">Sort: Name</option>
+            </select>
+          </div>
+        )}
+
         {plans.length > 0 ? (
           <table className="table">
             <thead>
@@ -154,7 +190,7 @@ const InstallmentManager: React.FC<InstallmentManagerProps> = ({ plans, onAdd, o
               </tr>
             </thead>
             <tbody>
-              {plans.map(plan => {
+              {sortedPlans.map(plan => {
                 const total = plan.totalPayments || 0;
                 const made = plan.paymentsMade || 0;
                 const progress = total > 0 ? (made / total) * 100 : 0;
@@ -184,6 +220,7 @@ const InstallmentManager: React.FC<InstallmentManagerProps> = ({ plans, onAdd, o
                     <td>Day {plan.dueDate}</td>
                     <td>
                       <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <button className="btn btn-icon" title="View schedule" onClick={() => setViewingPlan(plan)}><i className="bi bi-calendar3"></i></button>
                         <button className="btn btn-icon" onClick={() => handleEdit(plan)}><i className="bi bi-pencil"></i></button>
                         <button className="btn btn-icon" onClick={() => onDelete(plan.id)}><i className="bi bi-trash"></i></button>
                       </div>
@@ -201,6 +238,10 @@ const InstallmentManager: React.FC<InstallmentManagerProps> = ({ plans, onAdd, o
           </div>
         )}
       </div>
+
+      {viewingPlan && (
+        <InstallmentScheduleModal plan={viewingPlan} onClose={() => setViewingPlan(null)} />
+      )}
     </div>
   );
 };

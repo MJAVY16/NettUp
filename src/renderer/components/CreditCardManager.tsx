@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Debt } from '../types';
 import { formatCurrencyWithSymbol } from '../utils/formatters';
 import { severityColor } from '../utils/debtHelpers';
@@ -26,6 +26,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cards, onAdd, onU
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Debt>>(emptyForm);
+  const [sortBy, setSortBy] = useState<'balance' | 'utilization' | 'interest' | 'name' | 'due'>('balance');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +55,20 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cards, onAdd, onU
   const openBalance = openCards.reduce((sum, c) => sum + c.balance, 0);
   const totalAvailable = Math.max(0, totalLimit - openBalance);
   const overallUtil = totalLimit > 0 ? (openBalance / totalLimit) * 100 : 0;
+
+  const sortedCards = useMemo(() => {
+    const util = (c: Debt) => (c.creditLimit && c.creditLimit > 0 ? c.balance / c.creditLimit : 0);
+    return [...cards].sort((a, b) => {
+      switch (sortBy) {
+        case 'utilization': return util(b) - util(a);
+        case 'interest': return b.interestRate - a.interestRate;
+        case 'name': return a.name.localeCompare(b.name);
+        case 'due': return a.dueDate - b.dueDate;
+        case 'balance':
+        default: return b.balance - a.balance;
+      }
+    });
+  }, [cards, sortBy]);
 
   return (
     <div className="credit-card-manager">
@@ -154,6 +169,23 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cards, onAdd, onU
           </form>
         )}
 
+        {cards.length > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+            <select
+              className="form-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              style={{ width: 'auto', padding: '0.25rem 0.5rem', fontSize: '11px' }}
+            >
+              <option value="balance">Sort: Balance</option>
+              <option value="utilization">Sort: Utilization</option>
+              <option value="interest">Sort: Interest Rate</option>
+              <option value="name">Sort: Name</option>
+              <option value="due">Sort: Due Date</option>
+            </select>
+          </div>
+        )}
+
         {cards.length > 0 ? (
           <table className="table">
             <thead>
@@ -169,7 +201,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ cards, onAdd, onU
               </tr>
             </thead>
             <tbody>
-              {cards.map(card => {
+              {sortedCards.map(card => {
                 const limit = card.creditLimit || 0;
                 const utilization = limit > 0 ? (card.balance / limit) * 100 : 0;
                 const available = card.isClosed ? 0 : Math.max(0, limit - card.balance);

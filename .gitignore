@@ -12,6 +12,7 @@ npm-debug.log*
 # Personal / sample project data
 MCarbonell.json
 *.nettup
+backups/
 
 # OS / editor
 .DS_Store
