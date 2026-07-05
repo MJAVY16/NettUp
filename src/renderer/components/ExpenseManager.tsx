@@ -89,6 +89,18 @@ const ExpenseManager: React.FC<ExpenseManagerProps> = ({ expenses, onAdd, onUpda
   const essentialExpenses = expenses.filter(e => e.isEssential).reduce((sum, expense) => sum + calculateMonthlyExpense(expense), 0);
   const nonEssentialExpenses = totalMonthlyExpenses - essentialExpenses;
 
+  // Separate what's actually billed every month from periodic (yearly, etc.)
+  // charges, so the monthly figure reflects real monthly outflow rather than a
+  // blended average.
+  const MONTHLY_FREQS: Expense['frequency'][] = ['weekly', 'biweekly', 'semi-monthly', 'monthly'];
+  const billedMonthly = expenses
+    .filter(e => MONTHLY_FREQS.includes(e.frequency))
+    .reduce((sum, e) => sum + calculateMonthlyExpense(e), 0);
+  const periodicMonthly = expenses
+    .filter(e => !MONTHLY_FREQS.includes(e.frequency) && e.frequency !== 'one-time')
+    .reduce((sum, e) => sum + calculateMonthlyExpense(e), 0);
+  const periodicAnnual = periodicMonthly * 12;
+
   const paidCount = expenses.filter(e => e.frequency === 'one-time' && e.isPaid).length;
 
   // Filter and sort
@@ -144,21 +156,31 @@ const ExpenseManager: React.FC<ExpenseManagerProps> = ({ expenses, onAdd, onUpda
         <div className="dashboard-grid" style={{ marginBottom: '2rem' }}>
           <div className="stat-card">
             <div className="stat-card-header">
-              <span className="stat-card-title">Total Expenses</span>
+              <span className="stat-card-title">Billed Monthly</span>
+            </div>
+            <div className="stat-card-value">{formatCurrencyWithSymbol(billedMonthly)}</div>
+            <div className="stat-card-change">Actual monthly subscriptions & bills</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-card-header">
+              <span className="stat-card-title">Yearly &amp; Periodic</span>
+            </div>
+            <div className="stat-card-value">{formatCurrencyWithSymbol(periodicAnnual)}<span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>/yr</span></div>
+            <div className="stat-card-change">≈ {formatCurrencyWithSymbol(periodicMonthly)}/mo amortized</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-card-header">
+              <span className="stat-card-title">Total Avg / Month</span>
             </div>
             <div className="stat-card-value">{formatCurrencyWithSymbol(totalMonthlyExpenses)}</div>
+            <div className="stat-card-change">Monthly + amortized periodic</div>
           </div>
           <div className="stat-card">
             <div className="stat-card-header">
               <span className="stat-card-title">Essential</span>
             </div>
             <div className="stat-card-value">{formatCurrencyWithSymbol(essentialExpenses)}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-card-header">
-              <span className="stat-card-title">Non-Essential</span>
-            </div>
-            <div className="stat-card-value">{formatCurrencyWithSymbol(nonEssentialExpenses)}</div>
+            <div className="stat-card-change">{formatCurrencyWithSymbol(nonEssentialExpenses)} non-essential</div>
           </div>
         </div>
 

@@ -3,6 +3,7 @@ import { FinancialProject, FinancialSummary } from '../types';
 import { formatCurrencyWithSymbol, calculateMonthlyAmount } from '../utils/formatters';
 import { getNextPaymentDate } from '../utils/dateHelpers';
 import { format } from 'date-fns';
+import PayPeriods from './PayPeriods';
 
 interface DashboardProps {
   project: FinancialProject;
@@ -163,6 +164,8 @@ const Dashboard: React.FC<DashboardProps> = ({ project }) => {
           </div>
         </div>
       </div>
+
+      <PayPeriods project={project} />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
         <div className="section">
