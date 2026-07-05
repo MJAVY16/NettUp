@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Expense } from '../types';
 import { formatCurrencyWithSymbol, calculateMonthlyAmount } from '../utils/formatters';
+import { EXPENSE_CATEGORIES } from '../utils/categories';
 
 interface ExpenseManagerProps {
   expenses: Expense[];
@@ -29,10 +30,7 @@ const ExpenseManager: React.FC<ExpenseManagerProps> = ({ expenses, onAdd, onUpda
     notes: ''
   });
 
-  const categories = [
-    'Food', 'Housing', 'Transportation', 'Utilities', 'Insurance',
-    'Healthcare', 'Entertainment', 'Shopping', 'Education', 'Savings', 'Other'
-  ];
+  const categories = EXPENSE_CATEGORIES;
 
   useEffect(() => {
     if (showAddForm && formRef.current) {

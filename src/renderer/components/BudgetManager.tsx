@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Budget, Expense } from '../types';
 import { formatCurrencyWithSymbol } from '../utils/formatters';
 import { calculateBudgetSpent, monthlyAllocated } from '../utils/budgetHelpers';
+import { EXPENSE_CATEGORIES } from '../utils/categories';
 
 interface BudgetManagerProps {
   budgets: Budget[];
@@ -20,10 +21,7 @@ const BudgetManager: React.FC<BudgetManagerProps> = ({ budgets, expenses, onAdd,
     period: 'monthly'
   });
 
-  const categories = [
-    'Food', 'Housing', 'Transportation', 'Utilities', 'Insurance',
-    'Healthcare', 'Entertainment', 'Shopping', 'Education', 'Savings', 'Other'
-  ];
+  const categories = EXPENSE_CATEGORIES;
 
   // Spent is always derived from the live expense list (never stored), scaled
   // to the budget's own period so it lines up with `allocated`.
