@@ -306,9 +306,9 @@ function createWindow() {
  * package.json `build.publish`. Only runs in a packaged build — in dev there is
  * no published feed, so checking would just error.
  *
- * On launch it checks for a newer release, downloads it in the background, and
- * once ready prompts the user to restart and install. The user's data is never
- * touched by the update (it lives in userData), so a restart is safe.
+ * On launch it checks for a newer release and asks the user before downloading
+ * anything; once downloaded it prompts to restart and install. The user's data
+ * is never touched by the update (it lives in userData), so a restart is safe.
  */
 function setupAutoUpdater() {
   if (!app.isPackaged) {
@@ -316,16 +316,47 @@ function setupAutoUpdater() {
     return;
   }
 
-  autoUpdater.autoDownload = true;
+  autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = true;
 
   autoUpdater.on('checking-for-update', () => console.log('[UPDATER] Checking for updates...'));
-  autoUpdater.on('update-available', (info) => console.log('[UPDATER] Update available:', info.version));
   autoUpdater.on('update-not-available', () => console.log('[UPDATER] App is up to date'));
   autoUpdater.on('error', (err) => console.error('[UPDATER] Update error:', err));
   autoUpdater.on('download-progress', (p) =>
     console.log(`[UPDATER] Downloading: ${Math.round(p.percent)}%`)
   );
+
+  // Ask before downloading, like a regular app: "a new version is available,
+  // update now?" — only download once the user opts in.
+  autoUpdater.on('update-available', async (info) => {
+    console.log('[UPDATER] Update available:', info.version);
+    if (!mainWindow) return;
+
+    const result = await dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      title: 'Update Available',
+      message: `A new version of NettUp is available (v${info.version}).`,
+      detail: `You are on v${app.getVersion()}. Would you like to update now?`,
+      buttons: ['Update Now', 'Later'],
+      defaultId: 0,
+      cancelId: 1
+    });
+
+    if (result.response === 0) {
+      autoUpdater.downloadUpdate().catch((err) => {
+        console.error('[UPDATER] Download failed:', err);
+        if (mainWindow) {
+          dialog.showMessageBox(mainWindow, {
+            type: 'error',
+            title: 'Update Failed',
+            message: 'The update could not be downloaded.',
+            detail: 'Please try again later or download it from GitHub.',
+            buttons: ['OK']
+          });
+        }
+      });
+    }
+  });
 
   autoUpdater.on('update-downloaded', async (info) => {
     console.log('[UPDATER] Update downloaded:', info.version);
