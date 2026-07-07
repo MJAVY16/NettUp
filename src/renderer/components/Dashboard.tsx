@@ -7,9 +7,10 @@ import PayPeriods from './PayPeriods';
 
 interface DashboardProps {
   project: FinancialProject;
+  onUpdateSettings: (settings: Partial<FinancialProject['settings']>) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ project }) => {
+const Dashboard: React.FC<DashboardProps> = ({ project, onUpdateSettings }) => {
   const calculateSummary = (): FinancialSummary => {
     const totalMonthlyIncome = project.incomes.reduce((sum, income) => {
       return sum + calculateMonthlyAmount(income.amount, income.frequency);
@@ -165,7 +166,7 @@ const Dashboard: React.FC<DashboardProps> = ({ project }) => {
         </div>
       </div>
 
-      <PayPeriods project={project} />
+      <PayPeriods project={project} onUpdateSettings={onUpdateSettings} />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
         <div className="section">

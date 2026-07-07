@@ -108,6 +108,7 @@ export interface FinancialProject {
     currency: string;
     theme: 'light' | 'dark' | 'spy';
     autoApplyPayments?: boolean; // auto-apply due payments on open instead of confirming
+    payPeriodMode?: 'auto' | 'weekly' | 'biweekly' | 'semi-monthly' | 'monthly'; // how the month splits into paychecks; auto = detect from income
   };
   syncMetadata?: SyncMetadata;
 }

@@ -5,6 +5,7 @@ import { startOfMonth, endOfMonth, getDaysInMonth, eachWeekOfInterval, endOfWeek
 
 interface PayPeriodsProps {
   project: FinancialProject;
+  onUpdateSettings: (settings: Partial<FinancialProject['settings']>) => void;
 }
 
 interface LineItem {
@@ -34,7 +35,7 @@ const CYCLE_MONTHS: Record<string, number> = {
   'yearly': 12,
 };
 
-const PayPeriods: React.FC<PayPeriodsProps> = ({ project }) => {
+const PayPeriods: React.FC<PayPeriodsProps> = ({ project, onUpdateSettings }) => {
   const { incomes, debts, expenses } = project;
 
   // Primary cadence drives how the month is split into paychecks.
@@ -50,7 +51,8 @@ const PayPeriods: React.FC<PayPeriodsProps> = ({ project }) => {
   const year = now.getFullYear();
   const month = now.getMonth();
   const daysInMonth = getDaysInMonth(now);
-  const primary = getPrimaryPayFrequency();
+  const mode = project.settings.payPeriodMode || 'auto';
+  const primary = mode === 'auto' ? getPrimaryPayFrequency() : mode;
 
   // Parse a stored "YYYY-MM-DD" as a LOCAL date. `new Date("2026-07-01")`
   // parses as UTC midnight, which rolls back a day in western timezones and
@@ -143,17 +145,12 @@ const PayPeriods: React.FC<PayPeriodsProps> = ({ project }) => {
       });
       return periods;
     }
-    if (primary === 'biweekly') {
-      const mid = Math.floor(daysInMonth / 2);
+    // Two-paycheck months split at the 15th: the check received on the 1st
+    // covers bills due days 1–14, and the check on the 15th covers 15–end.
+    if (primary === 'biweekly' || primary === 'semi-monthly') {
       return [
-        buildPeriod(`1 – ${mid}`, 'First paycheck', 1, mid, 2),
-        buildPeriod(`${mid + 1} – ${daysInMonth}`, 'Second paycheck', mid + 1, daysInMonth, 2),
-      ];
-    }
-    if (primary === 'semi-monthly') {
-      return [
-        buildPeriod('1 – 15', 'First paycheck', 1, 15, 2),
-        buildPeriod(`16 – ${daysInMonth}`, 'Second paycheck', 16, daysInMonth, 2),
+        buildPeriod('1 – 14', 'Paid on the 1st', 1, 14, 2),
+        buildPeriod(`15 – ${daysInMonth}`, 'Paid on the 15th', 15, daysInMonth, 2),
       ];
     }
     return [buildPeriod(format(now, 'MMMM yyyy'), 'Full month', 1, daysInMonth, 1)];
@@ -173,7 +170,19 @@ const PayPeriods: React.FC<PayPeriodsProps> = ({ project }) => {
         <h3 className="section-title" style={{ marginBottom: 0 }}>
           <i className="bi bi-calendar2-week"></i> Pay Periods — {format(now, 'MMMM yyyy')}
         </h3>
-        <span className="badge badge-primary">{patternLabel[primary]}</span>
+        <select
+          className="form-select"
+          value={mode}
+          onChange={(e) => onUpdateSettings({ payPeriodMode: e.target.value as FinancialProject['settings']['payPeriodMode'] })}
+          style={{ width: 'auto', padding: '0.25rem 2rem 0.25rem 0.6rem', fontSize: '0.85rem' }}
+          title="How the month is split into paychecks"
+        >
+          <option value="auto">Auto — {patternLabel[getPrimaryPayFrequency()]}</option>
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Every 2 weeks (1st & 15th)</option>
+          <option value="semi-monthly">Semi-monthly (1st & 15th)</option>
+          <option value="monthly">Monthly</option>
+        </select>
       </div>
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: '0.25rem 0 1rem' }}>
         What you actually have to pay in each paycheck window this month. Yearly and periodic items only appear in the month they truly bill.

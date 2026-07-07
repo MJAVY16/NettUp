@@ -593,7 +593,7 @@ const App: React.FC = () => {
 
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard project={project} />;
+        return <Dashboard project={project} onUpdateSettings={updateSettings} />;
       case 'income':
         return (
           <IncomeManager
@@ -709,7 +709,7 @@ const App: React.FC = () => {
           />
         );
       default:
-        return <Dashboard project={project} />;
+        return <Dashboard project={project} onUpdateSettings={updateSettings} />;
     }
   };
 

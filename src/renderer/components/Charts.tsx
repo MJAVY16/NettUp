@@ -2,6 +2,7 @@ import React from 'react';
 import { PieChart, Pie, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { FinancialProject } from '../types';
 import { calculateMonthlyAmount } from '../utils/formatters';
+import { expenseChargeForMonth } from '../utils/projection';
 import { format } from 'date-fns';
 
 interface ChartsProps {
@@ -136,6 +137,13 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
   for (let i = 0; i < 12; i++) {
     const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
 
+    // This month's actual expenses: monthly items every month, plus any
+    // yearly/periodic items that truly bill in this specific month (spikes up).
+    const monthExpenses = project.expenses.reduce(
+      (sum, e) => sum + expenseChargeForMonth(e, monthDate.getFullYear(), monthDate.getMonth()),
+      0
+    );
+
     // Calculate this month's active debt payments
     let monthlyDebtPayments = 0;
 
@@ -172,13 +180,13 @@ const Charts: React.FC<ChartsProps> = ({ project }) => {
     });
 
     // Calculate net flow for this month with current active debts
-    const netFlow = totalMonthlyIncome - totalMonthlyExpenses - monthlyDebtPayments;
+    const netFlow = totalMonthlyIncome - monthExpenses - monthlyDebtPayments;
     cumulativeSavings += netFlow;
 
     cashFlow.push({
       month: format(monthDate, 'MMM yyyy'),
       income: parseFloat(totalMonthlyIncome.toFixed(2)),
-      expenses: parseFloat((totalMonthlyExpenses + monthlyDebtPayments).toFixed(2)),
+      expenses: parseFloat((monthExpenses + monthlyDebtPayments).toFixed(2)),
       net: parseFloat(netFlow.toFixed(2)),
       cumulative: parseFloat(cumulativeSavings.toFixed(2))
     });

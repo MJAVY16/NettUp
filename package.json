@@ -1,6 +1,6 @@
 {
   "name": "financial-tracker",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A comprehensive Windows financial tracking application",
   "main": "dist/main.js",
   "scripts": {
